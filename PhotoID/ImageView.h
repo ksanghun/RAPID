@@ -132,7 +132,8 @@ private:
 	
 	std::vector<POINT2D> m_faceLandmark;
 	std::vector<POINT2D> m_faceLandmarkDraw;
-
+	cv::Rect m_rectEyes[2];
+	cv::Rect m_rectFace;
 //	POINT3D* m_faceLandmarkDraw;
 	dlib::shape_predictor m_sp;
 	float m_fDeSkewAngle;

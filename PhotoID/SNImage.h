@@ -57,7 +57,7 @@ public:
 	float GetImgWScale() { return m_imgWScale; };
 	float GetImgHScale() { return m_imgHScale; };
 	POINT3D GetLeftTop() { return m_pntLT; };
-	void SetCropArea(float yFaceBot, float yFaceTop, float xFaceCenter, float yFaceCenter, bool IsPreview);
+	void SetCropArea(float yFaceBot, float yFaceTop, float xFaceCenter, float yFaceCenter, bool IsPreview, cv::Rect rectLeftEye, cv::Rect rectRightEye, cv::Rect rectFace);
 	void SetPhotoFomat(_PHOTOID_FORMAT _format);
 	void Undo();
 	void SaveCrop(CString strPath, CString strName, UINT w, UINT h, int type);
@@ -109,12 +109,15 @@ public:
 	void ColorBalance();
 	void RemoveHighlights();
 	void balance_white(cv::Mat& mat);
+	int median(cv::Mat channel);
 
 	POINT2D m_guidePosOri[_LNADMARK_POS_NUM];
 	POINT2D m_guidePos[_LNADMARK_POS_NUM];
 	POINT2D m_vecOutBoundery[4];
 	POINT2D m_vecInBoundery[4];
 	RECT2D m_rectCrop;
+
+	cv::Rect m_leftEye, m_rightEye, m_faceRect;
 
 private:
 	CString strPath;

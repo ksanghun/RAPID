@@ -89,6 +89,8 @@ void CPropFormView::DoDataExchange(CDataExchange* pDX)
 	DDV_MinMaxUInt(pDX, m_botMargin, 0, 9999);
 	DDX_Control(pDX, IDC_BN_SAVECROP, m_btnSave);
 	DDX_Control(pDX, IDC_BN_ADMIN, m_btnAdmin);
+	DDX_Control(pDX, IDC_BN_REOMVE_HL, m_btnRemoveHL);
+	DDX_Control(pDX, IDC_BN_CB, m_btnColorBalance);
 }
 
 BEGIN_MESSAGE_MAP(CPropFormView, CFormView)
@@ -260,10 +262,10 @@ void CPropFormView::OnInitialUpdate()
 	m_btnUndo.MoveWindow(xpos, ypos, bsize, bsize);				xpos += (bsize + 1);
 	m_btnAdmin.MoveWindow(xpos, ypos, bsize, bsize);
 	// second line //
-	//ypos += 65;
-	//m_btnSave.MoveWindow(5, ypos, 64, 64);
+	xpos = 2, ypos = 55;
+	m_btnColorBalance.MoveWindow(xpos, ypos, bsize, bsize);		xpos += (bsize + 1);
+	m_btnRemoveHL.MoveWindow(xpos, ypos, bsize, bsize);
 
-	//m_btnUndo.MoveWindow(70, ypos, 64, 64);
 	//m_btnUndo.ShowWindow(SW_HIDE);
 
 
@@ -309,6 +311,16 @@ void CPropFormView::OnInitialUpdate()
 		text = _T("Admin");
 		m_btnAdmin.LoadBitmap(IDB_BITMAP_ADMIN);
 		m_btnAdmin.SetToolTipText(&text);
+
+
+		text = _T("Color Balance");
+		m_btnColorBalance.LoadBitmap(IDB_BITMAP_COLORBAL);
+		m_btnColorBalance.SetToolTipText(&text);
+
+
+		text = _T("Remove Highlights");
+		m_btnRemoveHL.LoadBitmap(IDB_BITMAP_REMOVE_HL);
+		m_btnRemoveHL.SetToolTipText(&text);
 		
 		
 		m_IsBtnCreated = true;

@@ -75,6 +75,11 @@ public:
 	CHoverButton m_pButtonStamp;
 	CHoverButton m_pButtonBlur;
 	CHoverButton m_pButtonPrint;
+	CHoverButton m_btnSave;
+	CHoverButton m_btnAdmin;
+
+	CHoverButton m_btnRemoveHL;
+	CHoverButton m_btnColorBalance;
 
 	bool m_IsBtnCreated;
 	int m_fPreBrightness;
@@ -110,12 +115,13 @@ public:
 	UINT m_topMargin;
 	UINT m_botMargin;
 	afx_msg void OnDeltaposSpin3(NMHDR *pNMHDR, LRESULT *pResult);
-	CHoverButton m_btnSave;
+	
 	afx_msg void OnBnClickedBnSavecrop();
-	CHoverButton m_btnAdmin;
+	
 	afx_msg void OnBnClickedBnAdmin();
 	afx_msg void OnBnClickedBnCb();
 	afx_msg void OnBnClickedBnReomveHl();
+	
 };
 
 

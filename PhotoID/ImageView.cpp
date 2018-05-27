@@ -337,8 +337,8 @@ void CImageView::Render2D()
 			glVertex3f(m_guidePosDraw[_LEFT_EYE].x, m_guidePosDraw[_LEFT_EYE].y, 0.0f);
 			glVertex3f(m_guidePosDraw[_RIGHT_EYE].x, m_guidePosDraw[_RIGHT_EYE].y, 0.0f);
 
-			glVertex3f(m_guidePosDraw[_TOP_EYE].x, m_guidePosDraw[_TOP_EYE].y, 0.0f);
-			glVertex3f(m_guidePosDraw[_BOTTOM_EYE].x, m_guidePosDraw[_BOTTOM_EYE].y, 0.0f);
+			//glVertex3f(m_guidePosDraw[_TOP_EYE].x, m_guidePosDraw[_TOP_EYE].y, 0.0f);
+			//glVertex3f(m_guidePosDraw[_BOTTOM_EYE].x, m_guidePosDraw[_BOTTOM_EYE].y, 0.0f);
 			glEnd();
 			//==================================================
 
@@ -348,6 +348,9 @@ void CImageView::Render2D()
 			glColor3f(1.0f, 0.0f, 0.0f);
 			glBegin(GL_POINTS);
 			glVertex3f(m_guidePosDraw[_FCENTER].x, m_guidePosDraw[_FCENTER].y, 0.0f);
+			//for (int i = 0; i < _LNADMARK_POS_NUM; i++){
+			//	glVertex3f(m_guidePosDraw[i].x, m_guidePosDraw[i].y, 0.0f);
+			//}
 			glEnd();
 
 
@@ -581,7 +584,7 @@ void CImageView::ReSizeIcon()
 		//	m_faceLandmarkDraw[i] = m_pPhotoImg->convertImageToScreenSpace(m_faceLandmark[i], m_nWidth, m_nHeight, true);
 		//}
 
-		for (int i = 0; i < 4; i++){  // from 0 to eye top
+		for (int i = 0; i < _LNADMARK_POS_NUM; i++){  // from 0 to eye top
 			m_guidePosDraw[i] = m_pPhotoImg->convertImageToScreenSpace(m_pPhotoImg->m_guidePos[i], m_nWidth, m_nHeight, true);
 		}
 
@@ -1279,14 +1282,33 @@ bool CImageView::FaceDetection(IplImage* pImg)
 			m_pPhotoImg->m_guidePos[_NOSE] = m_faceLandmark[33];
 		//	m_pPhotoImg->m_guidePos[_LIP].y = (m_faceLandmark[48].y + m_faceLandmark[54].y)*0.5f;
 
+
+// Two eyes area =================================================================
+			int minx=9999, miny=9999, maxx=0, maxy=0;
 			for (int i = 36; i < 42; i++){
 				m_pPhotoImg->m_guidePos[_LEFT_EYE].x += m_faceLandmark[i].x;
 				m_pPhotoImg->m_guidePos[_LEFT_EYE].y += m_faceLandmark[i].y;
+
+				if (minx > m_faceLandmark[i].x)	minx = m_faceLandmark[i].x;
+				if (miny > m_faceLandmark[i].y)	miny = m_faceLandmark[i].y;
+
+				if (maxx < m_faceLandmark[i].x)	maxx = m_faceLandmark[i].x;
+				if (maxy < m_faceLandmark[i].y)	maxy = m_faceLandmark[i].y;
 			}
+			m_rectEyes[0] = cv::Rect(minx, miny, maxx - minx, maxy - miny);
+
+			minx = 9999, miny = 9999, maxx = 0, maxy = 0;
 			for (int i = 42; i < 48; i++){
 				m_pPhotoImg->m_guidePos[_RIGHT_EYE].x += m_faceLandmark[i].x;
 				m_pPhotoImg->m_guidePos[_RIGHT_EYE].y += m_faceLandmark[i].y;
+
+				if (minx > m_faceLandmark[i].x)	minx = m_faceLandmark[i].x;
+				if (miny > m_faceLandmark[i].y)	miny = m_faceLandmark[i].y;
+				if (maxx < m_faceLandmark[i].x)	maxx = m_faceLandmark[i].x;
+				if (maxy < m_faceLandmark[i].y)	maxy = m_faceLandmark[i].y;
 			}
+			m_rectEyes[1] = cv::Rect(minx, miny, maxx - minx, maxy - miny);
+//================================================================================
 
 			m_pPhotoImg->m_guidePos[_LEFT_EYE].x = (int)(m_pPhotoImg->m_guidePos[_LEFT_EYE].x*0.16666f);
 			m_pPhotoImg->m_guidePos[_LEFT_EYE].y = (int)(m_pPhotoImg->m_guidePos[_LEFT_EYE].y*0.16666f);
@@ -1412,7 +1434,19 @@ void CImageView::SetCropArea(bool IsPreview)
 	float fCenterY = (m_guideLine[1].GetCurrPos().y + nPos)*0.5f;
 	float fCenterX = m_guideLine[3].GetCurrPos().x;
 
-	m_pPhotoImg->SetCropArea(fTop, fBot, fCenterX, fCenterY, IsPreview);
+
+	// Calculate face rect, eye rect //
+
+	//m_rectEyes[0].width *= 1.1f;
+	//m_rectEyes[0].height *= 1.25f;
+	//m_rectEyes[1].width *= 1.1f;
+	//m_rectEyes[1].height *= 1.25f;
+
+	int facey = (fTop + m_rectEyes[0].y) / 2;
+	int width = (m_rectEyes[1].x + m_rectEyes[1].width) - m_rectEyes[0].x;
+	int height = (nPos - facey);
+	m_rectFace = cv::Rect(m_rectEyes[0].x, facey, width, height);
+	m_pPhotoImg->SetCropArea(fTop, fBot, fCenterX, fCenterY, IsPreview, m_rectEyes[0], m_rectEyes[1], m_rectFace);
 }
 
 //POINT2D CImageView::convertScreenToImageSpace(POINT2D pnt)

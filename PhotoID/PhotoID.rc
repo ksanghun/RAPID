@@ -109,6 +109,8 @@ IDB_BITMAP_UNDO         BITMAP                  "res\\undo.bmp"
 IDB_BITMAP_SAVE         BITMAP                  "res\\save.bmp"
 IDB_BITMAP_ADMIN        BITMAP                  "res\\Admin.bmp"
 IDB_BITMAP_REFRESH      BITMAP                  "res\\refresh.bmp"
+IDB_BITMAP_COLORBAL     BITMAP                  "res\\colorBalance.bmp"
+IDB_BITMAP_REMOVE_HL    BITMAP                  "res\\remove_h.bmp"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -333,35 +335,35 @@ IDD_FORMVIEW DIALOGEX 0, 0, 171, 452
 STYLE DS_SETFONT | WS_CHILD
 FONT 10, "Microsoft Sans Serif", 400, 0, 0x0
 BEGIN
-    CONTROL         "",IDC_SLIDER_ROTATE,"msctls_trackbar32",TBS_AUTOTICKS | TBS_TOP | WS_TABSTOP,62,224,96,18
+    CONTROL         "",IDC_SLIDER_ROTATE,"msctls_trackbar32",TBS_AUTOTICKS | TBS_TOP | WS_TABSTOP,62,236,96,18
     CONTROL         "AutoFit",IDC_BN_AUTOFIT,"Button",BS_OWNERDRAW | WS_TABSTOP,6,12,18,18
-    CONTROL         "",IDC_SLIDER_BRINGTNESS,"msctls_trackbar32",TBS_AUTOTICKS | TBS_TOP | WS_TABSTOP,62,248,96,18
-    CONTROL         "",IDC_SLIDER_CONTRAST,"msctls_trackbar32",TBS_AUTOTICKS | TBS_TOP | WS_TABSTOP,62,272,96,23
+    CONTROL         "",IDC_SLIDER_BRINGTNESS,"msctls_trackbar32",TBS_AUTOTICKS | TBS_TOP | WS_TABSTOP,62,260,96,18
+    CONTROL         "",IDC_SLIDER_CONTRAST,"msctls_trackbar32",TBS_AUTOTICKS | TBS_TOP | WS_TABSTOP,62,284,96,23
     CONTROL         "Print",IDC_BN_PRINT,"Button",BS_OWNERDRAW | BS_BITMAP | WS_TABSTOP,116,7,18,24
     CONTROL         "Crop",IDC_BN_CROPIMG,"Button",BS_OWNERDRAW | WS_TABSTOP,24,12,18,18
     CONTROL         "Stamp",IDC_BN_STEMP,"Button",BS_OWNERDRAW | WS_TABSTOP,60,12,18,24
     CONTROL         "Blur",IDC_BN_STEMP2,"Button",BS_OWNERDRAW | BS_BITMAP | WS_TABSTOP,84,12,24,24
-    COMBOBOX        IDC_COMBO1,7,48,156,30,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
-    LTEXT           "Country (Photo requirement, mm): ",IDC_STATIC,7,39,114,8
+    COMBOBOX        IDC_COMBO1,7,60,156,30,CBS_DROPDOWN | CBS_SORT | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Country (Photo requirement, mm): ",IDC_STATIC,7,51,114,8
     CONTROL         "Undo",IDC_BN_UNDO,"Button",BS_OWNERDRAW | WS_TABSTOP,42,12,18,23
-    CONTROL         "",IDC_SPIN2,"msctls_updown32",UDS_ARROWKEYS,39,90,11,14
-    EDITTEXT        IDC_EDIT_TOP_MARGIN,9,90,30,14,ES_AUTOHSCROLL
-    LTEXT           "Top Margin",IDC_STATIC,9,80,41,8
-    CONTROL         "",IDC_SPIN3,"msctls_updown32",UDS_ARROWKEYS,39,187,11,14
-    EDITTEXT        IDC_EDIT_BOT_MARGIN,9,187,30,14,ES_AUTOHSCROLL
-    LTEXT           "Bottom  Margin",IDC_STATIC,9,178,48,8
-    CONTROL         "",IDC_PREVIEW,"Static",SS_BLACKFRAME,56,84,100,118,WS_EX_STATICEDGE
-    LTEXT           "Rotate Image",IDC_STATIC,12,234,45,8
-    LTEXT           "Brightness",IDC_STATIC,12,256,34,8
-    LTEXT           "Contrast",IDC_STATIC,12,280,29,8
-    CONTROL         "",IDC_SLIDER_CURSOR_SIZE,"msctls_trackbar32",TBS_AUTOTICKS | TBS_TOP | WS_TABSTOP,62,296,96,24
-    LTEXT           "Cursor Size",IDC_STATIC,12,302,37,8
-    GROUPBOX        "Preview",IDC_STATIC,8,66,154,141
+    CONTROL         "",IDC_SPIN2,"msctls_updown32",UDS_ARROWKEYS,39,102,11,14
+    EDITTEXT        IDC_EDIT_TOP_MARGIN,9,102,30,14,ES_AUTOHSCROLL
+    LTEXT           "Top Margin",IDC_STATIC,9,92,41,8
+    CONTROL         "",IDC_SPIN3,"msctls_updown32",UDS_ARROWKEYS,39,199,11,14
+    EDITTEXT        IDC_EDIT_BOT_MARGIN,9,199,30,14,ES_AUTOHSCROLL
+    LTEXT           "Bottom  Margin",IDC_STATIC,9,190,48,8
+    CONTROL         "",IDC_PREVIEW,"Static",SS_BLACKFRAME,56,96,100,118,WS_EX_STATICEDGE
+    LTEXT           "Rotate Image",IDC_STATIC,12,246,45,8
+    LTEXT           "Brightness",IDC_STATIC,12,268,34,8
+    LTEXT           "Contrast",IDC_STATIC,12,292,29,8
+    CONTROL         "",IDC_SLIDER_CURSOR_SIZE,"msctls_trackbar32",TBS_AUTOTICKS | TBS_TOP | WS_TABSTOP,62,308,96,24
+    LTEXT           "Cursor Size",IDC_STATIC,12,314,37,8
+    GROUPBOX        "Preview",IDC_STATIC,8,78,154,141
     CONTROL         "Save",IDC_BN_SAVECROP,"Button",BS_OWNERDRAW | WS_TABSTOP,108,12,19,20
-    GROUPBOX        "Eidt Image",IDC_STATIC,8,212,154,114
+    GROUPBOX        "Eidt Image",IDC_STATIC,8,224,154,114
     CONTROL         "Admin",IDC_BN_ADMIN,"Button",BS_OWNERDRAW | WS_TABSTOP,130,19,17,14
-    PUSHBUTTON      "Color Balance",IDC_BN_CB,96,330,66,14
-    PUSHBUTTON      "Remove Highlights",IDC_BN_REOMVE_HL,24,330,66,14
+    CONTROL         "Color Balance",IDC_BN_CB,"Button",BS_OWNERDRAW | WS_TABSTOP,96,342,66,14
+    CONTROL         "Remove Highlights",IDC_BN_REOMVE_HL,"Button",BS_OWNERDRAW | WS_TABSTOP,24,342,66,14
 END
 
 IDD_DIALOG1 DIALOGEX 0, 0, 121, 68

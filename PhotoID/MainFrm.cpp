@@ -55,12 +55,11 @@ CMainFrame::~CMainFrame()
 	CString strFle = path + "\\data\\shape_predictor_68_face_landmarks.bin";
 
 	FILE* fp2 = 0;
-	fopen_s(&fp2, (CStringA)strFle, "wb");
-	fwrite(&m_adminPass, sizeof(_ADMIN_PASS), 1, fp2);
-	fclose(fp2);
-
-
-
+	if (fp2){
+		fopen_s(&fp2, (CStringA)strFle, "wb");
+		fwrite(&m_adminPass, sizeof(_ADMIN_PASS), 1, fp2);
+		fclose(fp2);
+	}
 }
 
 int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)

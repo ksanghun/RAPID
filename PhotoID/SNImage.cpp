@@ -936,8 +936,20 @@ void CSNImage::DrawCroppingArea()
 
 }
 
-void CSNImage::SetCropArea(float yFaceBot, float yFaceTop, float xFaceCenter, float yFaceCenter, bool IsPreview)
+void CSNImage::SetCropArea(float yFaceBot, float yFaceTop, float xFaceCenter, float yFaceCenter, bool IsPreview, cv::Rect rectLeftEye, cv::Rect rectRightEye, cv::Rect rectFace)
 {	
+	rectLeftEye.width *= 1.1f;
+	rectLeftEye.height *= 1.4f;
+
+	rectRightEye.width *= 1.1f;
+	rectRightEye.height *= 1.4f;
+
+
+	rectFace.width = (rectRightEye.x + rectRightEye.width) - rectLeftEye.x;
+	rectFace.x -= rectFace.width*0.1f;
+	rectFace.width += rectFace.width*0.2f;
+
+
 
 	float faceLength = (yFaceTop - yFaceBot);
 	float faceeLengthMM = m_printFormat.heightMM - (m_printFormat.botMarginMM + m_printFormat.topMarginMM);
@@ -971,6 +983,20 @@ void CSNImage::SetCropArea(float yFaceBot, float yFaceTop, float xFaceCenter, fl
 	//	SetCropImg(fScale);
 	//}
 
+	
+	m_leftEye = rectLeftEye;	
+	m_leftEye.x -= m_rectCrop.x1;
+	m_leftEye.y -= m_rectCrop.y1;
+
+	m_rightEye = rectRightEye;
+	m_rightEye.x -= m_rectCrop.x1;
+	m_rightEye.y -= m_rectCrop.y1;
+
+	m_faceRect = rectFace;
+	m_faceRect.x -= m_rectCrop.x1;
+	m_faceRect.y -= m_rectCrop.y1;
+
+	
 
 
 
@@ -1184,6 +1210,7 @@ void CSNImage::SetCropImg(float _fScale)
 {
 	CMainFrame* pM = (CMainFrame*)AfxGetMainWnd();
 	
+	
 	if (m_IsCropImg == true) return;
 
 	if (m_pSrcImg == NULL) return;
@@ -1223,7 +1250,23 @@ void CSNImage::SetCropImg(float _fScale)
 	cvResetImageROI(m_pSrcImgCopy);
 
 
+	float fscalex = ((float)m_pCropImg->width / (float)m_rectCrop.width);
+	float fscaley = ((float)m_pCropImg->height / (float)m_rectCrop.height);
+
+
+	// TEST //
+	float fcali = 1.05f;
+	m_leftEye.x *= _fScale*fscalex;		m_leftEye.y *= _fScale*fscaley;		m_leftEye.width *= _fScale*fscalex;		m_leftEye.height *= _fScale*fscaley;
+	m_rightEye.x *= _fScale*fscalex;	m_rightEye.y *= _fScale*fscaley;	m_rightEye.width *= _fScale*fscalex;		m_rightEye.height *= _fScale*fscaley;
+	m_faceRect.x *= _fScale*fscalex;	m_faceRect.y *= _fScale*fscaley;	m_faceRect.width *= _fScale*fscalex;		m_faceRect.height *= _fScale*fscaley;
 	
+	
+	//cv::Mat in = cv::cvarrToMat(m_pCropImg);
+	//cv::rectangle(in, m_leftEye, cv::Scalar(255, 0, 0), 1);
+	//cv::rectangle(in, m_rightEye, cv::Scalar(255, 0, 0), 1);
+	//cv::rectangle(in, m_faceRect, cv::Scalar(255, 0, 0), 1);	
+	//cv::imshow("facearea", in);
+		
 
 	// Set Crop image as main image
 	SetGLTexture(m_pCropImg);
@@ -1236,6 +1279,16 @@ void CSNImage::SetCropImg(float _fScale)
 	
 	cvCvtColor(m_pCropImgSmall, m_pCropImgSmall, CV_RGB2BGR);
 	pM->DisplayPreview((void*)m_pCropImgSmall);
+
+
+	
+
+
+
+
+
+
+
 }
 
 
@@ -1391,7 +1444,10 @@ void CSNImage::ColorBalance()
 {
 	if (m_IsCropImg == true){
 		cv::Mat in = cv::cvarrToMat(m_pCropImg);
+
+	//	cvShowImage("Before", m_pCropImg);
 		balance_white(in);
+	//	cvShowImage("After", m_pCropImg);
 
 	//	cv::imshow("before", in);
 		//float half_percent = 1.0f / 200.0f;
@@ -1413,28 +1469,83 @@ void CSNImage::ColorBalance()
 		//}
 		//merge(tmpsplit, in);
 	//	cv::imshow("after", in);
+	//	m_pCropImg = &IplImage(in);
+
 		SetGLTexture(m_pCropImg);
 	}
 }
 
+int CSNImage::median(cv::Mat channel)
+{
+	int m = (channel.rows*channel.cols) / 2;
+	int bin = 0;
+	int med = -1.0;
+
+	int histSize = 256;
+	float range[] = { 0, 256 };
+	const float* histRange = { range };
+	bool uniform = true;
+	bool accumulate = false;
+	cv::Mat hist;
+	cv::calcHist(&channel, 1, 0, cv::Mat(), hist, 1, &histSize, &histRange, uniform, accumulate);
+
+	for (int i = 0; i < histSize && med < 0.0; ++i)
+	{
+		bin += cvRound(hist.at< float >(i));
+		if (bin > m && med < 0.0)
+			med = i;
+	}
+
+	return med;
+}
 
 void CSNImage::RemoveHighlights()
 {
 	if (m_IsCropImg == true){
-		cv::Mat in = cv::cvarrToMat(m_pCropImg);
-
-		cv::resize(in, in, cv::Size(500, 500));
-		cv::cvtColor(in, in, CV_BGR2RGB);
-
-		cv::Mat mask, res;
+		cv::Mat in = cv::cvarrToMat(m_pCropImg)(m_faceRect);		
+		cv::Mat mask;
 		cv::cvtColor(in, mask, CV_RGB2GRAY);
-		cv::threshold(mask, mask, 170, 255, CV_THRESH_BINARY);
-		cv::imshow("mask", mask);
+		int m = median(mask);
 
-		cv::imshow("inpaint_before", in);
-		cv::inpaint(in, mask, in, 5, cv::INPAINT_NS);
-		cv::imshow("inpaint", in);
+		int th = m + 60;  // 70 is experimental value !
+		if (th > 210)	th = 210;  // 190 is max value from experience !
+		if (th < 120)	th = 120;
+		cv::threshold(mask, mask, th, 250, CV_THRESH_BINARY);
+
+		// Fill eyes area with black============================= //
+		cv::Rect leftEye = m_leftEye;
+		leftEye.x = 0;
+		leftEye.y -= m_faceRect.y;
 		
+
+		cv::Rect rightEye = m_rightEye;
+		rightEye.x = mask.cols - rightEye.width;
+		rightEye.y -= m_faceRect.y;
+
+		mask(leftEye).setTo(cv::Scalar(0));
+		mask(rightEye).setTo(cv::Scalar(0));
+		//==========================================================
+
+	//	cv::imshow("mask", mask);
+		cv::inpaint(in, mask, in, 5, cv::INPAINT_NS);
+	//	cv::imshow("inpaint", in);
+
+	//	cv::resize(in, in, cv::Size(500, 500));
+		//cv::cvtColor(in, in, CV_BGR2RGB);
+
+		//cv::Mat mask, res;
+		//cv::cvtColor(in, mask, CV_RGB2GRAY);
+		//cv::threshold(mask, mask, 170, 255, CV_THRESH_BINARY);
+		//cv::imshow("mask", mask);
+
+		//cv::imshow("inpaint_before", in);
+
+
+		//cv::inpaint(in, mask, in, 1, cv::INPAINT_NS);
+
+
+		//cv::imshow("inpaint", in);
+		//
 		SetGLTexture(m_pCropImg);
 	}
 }
