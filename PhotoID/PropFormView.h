@@ -42,7 +42,7 @@ protected:
 	DECLARE_MESSAGE_MAP()
 public:
 	virtual void OnInitialUpdate();
-
+	
 	void SetImageRotateValue(float _fAngle);
 	void SetSliderMode(bool IsCropMode);
 	void SetUndoButton(bool IsEnable, unsigned short _type);
@@ -122,6 +122,12 @@ public:
 	afx_msg void OnBnClickedBnCb();
 	afx_msg void OnBnClickedBnReomveHl();
 	
+	CSliderCtrl m_sliderHL;
+	CSliderCtrl m_sliderCB;
+	int m_cbTh;
+	int m_hlTh;
+	afx_msg void OnNMReleasedcaptureSliderHl(NMHDR *pNMHDR, LRESULT *pResult);
+	afx_msg void OnNMReleasedcaptureSliderCb(NMHDR *pNMHDR, LRESULT *pResult);
 };
 
 

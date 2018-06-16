@@ -92,7 +92,6 @@
 #define IDD_DLG_PASS                    324
 #define IDD_DLG_RESET_PASS              325
 #define IDB_BITMAP_COLORBAL             326
-#define IDB_BITMAP1                     327
 #define IDB_BITMAP_REMOVE_HL            327
 #define IDC_SLIDER_ROTATE               1000
 #define IDC_SLIDER_BRINGTNESS           1001
@@ -132,6 +131,9 @@
 #define IDC_BN_CB                       1047
 #define IDC_BUTTON1                     1048
 #define IDC_BN_REOMVE_HL                1048
+#define IDC_SLIDER_CB                   1049
+#define IDC_SLIDER_HL                   1050
+#define IDC_STATIC_HL                   1052
 
 // Next default values for new objects
 // 
@@ -139,7 +141,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        328
 #define _APS_NEXT_COMMAND_VALUE         32771
-#define _APS_NEXT_CONTROL_VALUE         1049
+#define _APS_NEXT_CONTROL_VALUE         1053
 #define _APS_NEXT_SYMED_VALUE           311
 #endif
 #endif

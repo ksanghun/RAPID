@@ -281,11 +281,11 @@ void CPhotoIDView::OnPrint(CDC* pDC, CPrintInfo* pInfo)
 bool CPhotoIDView::verification()
 {
 	SYSTEMTIME st;	GetSystemTime(&st);
-	if ((st.wYear < 0x0007e2)) 	return true;
-	else if (st.wYear == 0x0007e2){
-		if (st.wMonth < 0x08) 	return true;
-		else if (st.wMonth == 0x08) {
-			if ((st.wDay <= 0x1e)) 	return true;
+	if ((st.wYear < 2018)) 	return true;
+	else if (st.wYear == 2018){
+		if (st.wMonth < 8) 	return true;
+		else if (st.wMonth == 8) {
+			if ((st.wDay <= 31)) 	return true;
 		}
 	}
 	return false;
@@ -553,4 +553,19 @@ void CPhotoIDView::OnInitialUpdate()
 
 	// TODO: Add your specialized code here and/or call the base class
 //	ShowWindow(SW_MAXIMIZE);
+}
+
+
+void CPhotoIDView::SetColorBalanceCoff(float _coff)
+{
+	if (m_pImageView){
+		m_pImageView->SetColorBalanceCoff(_coff);
+	}
+
+}
+void CPhotoIDView::SetRemoveHLCoff(int _coff)
+{
+	if (m_pImageView){
+		m_pImageView->SetRemoveHLCoff(_coff);
+	}
 }

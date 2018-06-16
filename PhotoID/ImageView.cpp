@@ -1801,3 +1801,17 @@ bool CImageView::GetCropImgInfo(CString& path, CString& name, UINT& _w, UINT& _h
 	}
 	return false;
 }
+
+void CImageView::SetColorBalanceCoff(float _coff)
+{
+	if (m_pPhotoImg){
+		m_pPhotoImg->SetColorBalanceCoff(_coff);
+	}
+}
+void CImageView::SetRemoveHLCoff(int _coff)
+{
+	if (m_pPhotoImg){
+		m_pPhotoImg->SetRemoveHLCoff(_coff);
+	}
+
+}

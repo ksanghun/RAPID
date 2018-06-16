@@ -24,6 +24,8 @@ CPropFormView::CPropFormView()
 	//, m_fEditContrast(0)
 	, m_topMargin(0)
 	, m_botMargin(0)
+	, m_cbTh(0)
+	, m_hlTh(0)
 {
 	m_preRotateSliderPos = 0;
 	m_IsBtnCreated = false;
@@ -91,6 +93,12 @@ void CPropFormView::DoDataExchange(CDataExchange* pDX)
 	DDX_Control(pDX, IDC_BN_ADMIN, m_btnAdmin);
 	DDX_Control(pDX, IDC_BN_REOMVE_HL, m_btnRemoveHL);
 	DDX_Control(pDX, IDC_BN_CB, m_btnColorBalance);
+	DDX_Control(pDX, IDC_SLIDER_HL, m_sliderHL);
+	DDX_Control(pDX, IDC_SLIDER_CB, m_sliderCB);
+	DDX_Slider(pDX, IDC_SLIDER_CB, m_cbTh);
+	DDV_MinMaxInt(pDX, m_cbTh, 1, 11);
+	DDX_Slider(pDX, IDC_SLIDER_HL, m_hlTh);
+	DDV_MinMaxInt(pDX, m_hlTh, -3, 3);
 }
 
 BEGIN_MESSAGE_MAP(CPropFormView, CFormView)
@@ -117,6 +125,8 @@ ON_BN_CLICKED(IDC_BN_SAVECROP, &CPropFormView::OnBnClickedBnSavecrop)
 ON_BN_CLICKED(IDC_BN_ADMIN, &CPropFormView::OnBnClickedBnAdmin)
 ON_BN_CLICKED(IDC_BN_CB, &CPropFormView::OnBnClickedBnCb)
 ON_BN_CLICKED(IDC_BN_REOMVE_HL, &CPropFormView::OnBnClickedBnReomveHl)
+ON_NOTIFY(NM_RELEASEDCAPTURE, IDC_SLIDER_HL, &CPropFormView::OnNMReleasedcaptureSliderHl)
+ON_NOTIFY(NM_RELEASEDCAPTURE, IDC_SLIDER_CB, &CPropFormView::OnNMReleasedcaptureSliderCb)
 END_MESSAGE_MAP()
 
 
@@ -235,13 +245,21 @@ void CPropFormView::OnInitialUpdate()
 	
 	m_ctrlSliderRotate.Invalidate(TRUE);
 
-
-
+	
 	m_sliderCurSize.SetRange(10, 100, TRUE);
 	m_sliderCurSize.SetPos(55);
 	m_sliderCurSize.SetTicFreq(2);
-
 	pView->SetUserCursorSize(m_sliderCurSize.GetPos());
+
+
+	m_sliderCB.SetRange(1, 11, TRUE);
+	m_sliderCB.SetPos(6);
+	m_sliderCB.SetTicFreq(1);
+
+	m_sliderHL.SetRange(-3, 3, TRUE);
+	m_sliderHL.SetPos(0);
+	m_sliderHL.SetTicFreq(1);
+
 
 	SetSliderMode(false);
 	m_btnUndo.EnableWindow(FALSE);
@@ -262,9 +280,16 @@ void CPropFormView::OnInitialUpdate()
 	m_btnUndo.MoveWindow(xpos, ypos, bsize, bsize);				xpos += (bsize + 1);
 	m_btnAdmin.MoveWindow(xpos, ypos, bsize, bsize);
 	// second line //
-	xpos = 2, ypos = 55;
+	xpos = 2, ypos = 55;	
 	m_btnColorBalance.MoveWindow(xpos, ypos, bsize, bsize);		xpos += (bsize + 1);
-	m_btnRemoveHL.MoveWindow(xpos, ypos, bsize, bsize);
+	m_sliderCB.MoveWindow(xpos, ypos, bsize * 7+6, bsize);	//	xpos += (bsize + 1) * 4;
+	
+
+	xpos = 2, ypos = 105;
+	m_btnRemoveHL.MoveWindow(xpos, ypos, bsize, bsize);			xpos += (bsize + 1);
+	m_sliderHL.MoveWindow(xpos, ypos, bsize * 7+6, bsize);	//	xpos += (bsize + 1) * 4;
+	
+	
 
 	//m_btnUndo.ShowWindow(SW_HIDE);
 
@@ -991,4 +1016,25 @@ void CPropFormView::OnBnClickedBnReomveHl()
 {
 	// TODO: Add your control notification handler code here
 	pView->RemoveHightlights();
+}
+
+
+void CPropFormView::OnNMReleasedcaptureSliderHl(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	// TODO: Add your control notification handler code here
+	UpdateData(TRUE);
+	pView->SetRemoveHLCoff(m_hlTh * 10);
+
+	*pResult = 0;
+}
+
+
+void CPropFormView::OnNMReleasedcaptureSliderCb(NMHDR *pNMHDR, LRESULT *pResult)
+{
+	// TODO: Add your control notification handler code here
+	UpdateData(TRUE);
+	float cbCoff = (float)m_cbTh*0.03f;
+	pView->SetColorBalanceCoff(cbCoff);
+
+	*pResult = 0;
 }

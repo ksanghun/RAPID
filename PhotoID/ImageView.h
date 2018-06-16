@@ -88,6 +88,9 @@ public:
 
 	float GetDetectedScale(){ return m_fImgDetectScale;  }
 
+
+	void SetColorBalanceCoff(float _coff); //{ m_cbCoff = _coff; }
+	void SetRemoveHLCoff(int _coff);// { m_minThforHL = _coff; }
 private:
 //	CWinThread* g_pl;
 

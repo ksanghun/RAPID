@@ -78,6 +78,13 @@ CSNImage::CSNImage()
 
 
 	m_undoType = 0;
+
+	
+	m_minThforHL = 0;
+	m_minThforHL_pre = -1;;
+	m_cbCoff_pre = 0.0f;
+	m_cbCoff = 0.05f;
+
 }
 
 void CSNImage::Undo()
@@ -1393,7 +1400,8 @@ void CSNImage::BlurImage(cv::Rect targetRect, cv::Size blurSize)
 
 void CSNImage::balance_white(cv::Mat& mat) 
 {
-	double discard_ratio = 0.05;
+	double discard_ratio = m_cbCoff;
+//	double discard_ratio = 0.05;  // 06/16
 	int hists[3][256];
 	memset(hists, 0, 3 * 256 * sizeof(int));
 
@@ -1443,7 +1451,19 @@ void CSNImage::balance_white(cv::Mat& mat)
 void CSNImage::ColorBalance()
 {
 	if (m_IsCropImg == true){
-		cv::Mat in = cv::cvarrToMat(m_pCropImg);
+
+		
+		CMainFrame* pM = (CMainFrame*)AfxGetMainWnd();
+
+		if (m_cbCoff_pre != m_cbCoff){
+			m_Undo.PushUndo(m_pCropImg);
+			pM->SetUndoButtonState(true, 3);
+			m_cbCoff_pre = m_cbCoff;
+		}
+		else{
+			return;
+		}
+		cv::Mat in = cv::cvarrToMat(m_pCropImg).clone();
 
 	//	cvShowImage("Before", m_pCropImg);
 		balance_white(in);
@@ -1470,6 +1490,13 @@ void CSNImage::ColorBalance()
 		//merge(tmpsplit, in);
 	//	cv::imshow("after", in);
 	//	m_pCropImg = &IplImage(in);
+
+		cvReleaseImage(&m_pCropImg);
+		m_pCropImg = cvCreateImage(cvSize(in.cols, in.rows), 8,3);
+		IplImage ipltemp = in;
+		cvCopy(&ipltemp, m_pCropImg);
+	//	m_pCropImg = (IplImage*)(&IplImage(in));
+	//	cvCopy((IplImage*)(&IplImage(in)), m_pCropImg);
 
 		SetGLTexture(m_pCropImg);
 	}
@@ -1502,15 +1529,34 @@ int CSNImage::median(cv::Mat channel)
 void CSNImage::RemoveHighlights()
 {
 	if (m_IsCropImg == true){
-		cv::Mat in = cv::cvarrToMat(m_pCropImg)(m_faceRect);		
+
+		CMainFrame* pM = (CMainFrame*)AfxGetMainWnd();
+		int maxv = 210 ;
+		int minv = 120 ;
+
+		if (m_minThforHL_pre != m_minThforHL){
+			m_Undo.PushUndo(m_pCropImg);
+			pM->SetUndoButtonState(true, 3);
+			m_minThforHL_pre = m_minThforHL;
+		}
+		else{
+			return;
+		}
+		
+		
+		cv::Mat inSrc = cv::cvarrToMat(m_pCropImg).clone();
+		cv::Mat in = inSrc(m_faceRect);
+
+	//	cv::Mat in = cv::cvarrToMat(m_pCropImg)(m_faceRect).clone();		
 		cv::Mat mask;
 		cv::cvtColor(in, mask, CV_RGB2GRAY);
 		int m = median(mask);
 
-		int th = m + 60;  // 70 is experimental value !
-		if (th > 210)	th = 210;  // 190 is max value from experience !
-		if (th < 120)	th = 120;
+		int th = m + 60 + m_minThforHL;  // 70 is experimental value !
+		if (th > maxv)	th = maxv;  // 190 is max value from experience !
+		if (th < minv)	th = minv;
 		cv::threshold(mask, mask, th, 250, CV_THRESH_BINARY);
+	//	cv::threshold(mask, mask, 100, 250, CV_THRESH_BINARY);
 
 		// Fill eyes area with black============================= //
 		cv::Rect leftEye = m_leftEye;
@@ -1526,8 +1572,9 @@ void CSNImage::RemoveHighlights()
 		mask(rightEye).setTo(cv::Scalar(0));
 		//==========================================================
 
-	//	cv::imshow("mask", mask);
+		cv::imshow("mask", mask);
 		cv::inpaint(in, mask, in, 5, cv::INPAINT_NS);
+	//	cv::inpaint(in, mask, in, 10, cv::INPAINT_NS);
 	//	cv::imshow("inpaint", in);
 
 	//	cv::resize(in, in, cv::Size(500, 500));
@@ -1546,6 +1593,14 @@ void CSNImage::RemoveHighlights()
 
 		//cv::imshow("inpaint", in);
 		//
+
+
+
+		cvReleaseImage(&m_pCropImg);
+		m_pCropImg = cvCreateImage(cvSize(inSrc.cols, inSrc.rows), 8, 3);
+		IplImage ipltemp = inSrc;
+		cvCopy(&ipltemp, m_pCropImg);
+		
 		SetGLTexture(m_pCropImg);
 	}
 }

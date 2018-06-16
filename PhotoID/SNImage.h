@@ -26,6 +26,9 @@ public:
 	void SetSelecttion(bool _isSel);
 	void SetImgSize(unsigned short _w, unsigned long _h) { nImgWidth = _w; nImgHeight = _h; };
 	void SetImgDrawAngle(float _angle) { m_fImgDrawAngle = _angle; }
+
+	void SetColorBalanceCoff(float _coff) { m_cbCoff = _coff; }
+	void SetRemoveHLCoff(int _coff) { m_minThforHL = _coff; }
 //	void SetBgColor(float r, float g, float b);
 
 	void SetBoundary(int _width, int _height);
@@ -179,5 +182,9 @@ private:
 	_PHOTOID_FORMAT m_printFormat;
 
 	unsigned short m_undoType;
+	int m_minThforHL;
+	int m_minThforHL_pre;
+	float m_cbCoff;
+	float m_cbCoff_pre;
 };
 

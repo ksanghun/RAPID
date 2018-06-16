@@ -47,6 +47,11 @@ public:
 	void RemoveHightlights();
 	void SaveCrop(CString strPath, CString strName, UINT w, UINT h, int type);
 	bool GetCropImgInfo(CString& path, CString& name, UINT& _w, UINT& _h, float& r);
+
+
+	void SetColorBalanceCoff(float _coff); 
+	void SetRemoveHLCoff(int _coff);
+
 // Overrides
 
 private:
