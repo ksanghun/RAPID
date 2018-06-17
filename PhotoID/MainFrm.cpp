@@ -255,8 +255,8 @@ BOOL CMainFrame::PreCreateWindow(CREATESTRUCT& cs)
 	// TODO: Modify the Window class or styles here by modifying
 	//  the CREATESTRUCT cs
 
-//	cs.style &= ~(LONG)FWS_ADDTOTITLE;
-	cs.lpszName = L"PhotoID Maker";
+	cs.style &= ~(LONG)FWS_ADDTOTITLE;
+	cs.lpszName = L"RAPID PASSPORT PHOTO SYSTEM";
 
 	//CRect r;
 	//GetDesktopWindow()->GetWindowRect(&r);

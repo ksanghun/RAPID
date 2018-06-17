@@ -55,6 +55,9 @@ void CPropFormView::ReSetSlideValues()
 
 	m_UndoBrightness = 0;
 	m_UndoContrast = 0;
+	m_hlTh = 0;
+
+	UpdateData(FALSE);
 }
 
 void CPropFormView::DoDataExchange(CDataExchange* pDX)
@@ -255,6 +258,7 @@ void CPropFormView::OnInitialUpdate()
 	m_sliderCB.SetRange(1, 11, TRUE);
 	m_sliderCB.SetPos(6);
 	m_sliderCB.SetTicFreq(1);
+	m_sliderCB.ShowWindow(SW_HIDE);
 
 	m_sliderHL.SetRange(-3, 3, TRUE);
 	m_sliderHL.SetPos(0);
@@ -1033,7 +1037,7 @@ void CPropFormView::OnNMReleasedcaptureSliderCb(NMHDR *pNMHDR, LRESULT *pResult)
 {
 	// TODO: Add your control notification handler code here
 	UpdateData(TRUE);
-	float cbCoff = (float)m_cbTh*0.03f;
+	float cbCoff = (float)m_cbTh*0.02f;
 	pView->SetColorBalanceCoff(cbCoff);
 
 	*pResult = 0;

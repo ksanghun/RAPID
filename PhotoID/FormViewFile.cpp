@@ -8,8 +8,8 @@
 using namespace Gdiplus;
 
 // CFormViewFile
-#define	THUMBNAIL_WIDTH		64
-#define	THUMBNAIL_HEIGHT	64
+#define	THUMBNAIL_WIDTH		120
+#define	THUMBNAIL_HEIGHT	120
 
 IMPLEMENT_DYNCREATE(CFormViewFile, CFormView)
 
@@ -227,7 +227,7 @@ int CFormViewFile::OnCreate(LPCREATESTRUCT lpCreateStruct)
 	m_wndListCtrl.SetExtendedStyle(LVS_EX_FULLROWSELECT | LVS_EX_GRIDLINES);
 
 
-	HIMAGELIST hImageList = ImageList_Create(100, 100, ILC_COLOR32, 0, 10);
+	HIMAGELIST hImageList = ImageList_Create(THUMBNAIL_WIDTH, THUMBNAIL_HEIGHT, ILC_COLOR32, 0, 10);
 	m_FileViewImages.Attach(hImageList);
 
 	CBitmap dummy;

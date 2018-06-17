@@ -81,9 +81,9 @@ CSNImage::CSNImage()
 
 	
 	m_minThforHL = 0;
-	m_minThforHL_pre = -1;;
+	m_minThforHL_pre = -1;
 	m_cbCoff_pre = 0.0f;
-	m_cbCoff = 0.05f;
+	m_cbCoff = 0.1f;
 
 }
 
@@ -290,6 +290,12 @@ void CSNImage::SetSrcIplImage(IplImage* pimg)
 	m_fImgAngle = 0.0f;
 	m_fSrcBrightness = 0.0f;
 	m_fSrcContrast = 1.0f;
+
+
+	m_minThforHL = 0;
+	m_minThforHL_pre = -1;
+	m_cbCoff_pre = 0.0f;
+	m_cbCoff = 0.1f;
 
 
 	CMainFrame* pM = (CMainFrame*)AfxGetMainWnd();
@@ -1400,8 +1406,8 @@ void CSNImage::BlurImage(cv::Rect targetRect, cv::Size blurSize)
 
 void CSNImage::balance_white(cv::Mat& mat) 
 {
-	double discard_ratio = m_cbCoff;
-//	double discard_ratio = 0.05;  // 06/16
+//	double discard_ratio = m_cbCoff;
+	double discard_ratio = 0.12f;
 	int hists[3][256];
 	memset(hists, 0, 3 * 256 * sizeof(int));
 
@@ -1423,8 +1429,8 @@ void CSNImage::balance_white(cv::Mat& mat)
 		}
 		vmin[i] = 0;
 		vmax[i] = 255;
-		while (hists[i][vmin[i]] < discard_ratio * total)
-			vmin[i] += 1;
+		//while (hists[i][vmin[i]] < discard_ratio * total)
+		//	vmin[i] += 1;
 		while (hists[i][vmax[i]] > (1 - discard_ratio) * total)
 			vmax[i] -= 1;
 		if (vmax[i] < 255 - 1)
@@ -1442,6 +1448,9 @@ void CSNImage::balance_white(cv::Mat& mat)
 				if (val > vmax[j])
 					val = vmax[j];
 				ptr[x * 3 + j] = static_cast<uchar>((val - vmin[j]) * 255.0 / (vmax[j] - vmin[j]));
+
+				//if (ptr[x * 3 + j] > 245)
+				//	ptr[x * 3 + j] = 255;
 			}
 		}
 	}
@@ -1455,14 +1464,14 @@ void CSNImage::ColorBalance()
 		
 		CMainFrame* pM = (CMainFrame*)AfxGetMainWnd();
 
-		if (m_cbCoff_pre != m_cbCoff){
+//		if (m_cbCoff_pre != m_cbCoff){
 			m_Undo.PushUndo(m_pCropImg);
 			pM->SetUndoButtonState(true, 3);
 			m_cbCoff_pre = m_cbCoff;
-		}
-		else{
-			return;
-		}
+		//}
+		//else{
+		//	return;
+		//}
 		cv::Mat in = cv::cvarrToMat(m_pCropImg).clone();
 
 	//	cvShowImage("Before", m_pCropImg);
@@ -1534,14 +1543,14 @@ void CSNImage::RemoveHighlights()
 		int maxv = 210 ;
 		int minv = 120 ;
 
-		if (m_minThforHL_pre != m_minThforHL){
+//		if (m_minThforHL_pre != m_minThforHL){
 			m_Undo.PushUndo(m_pCropImg);
 			pM->SetUndoButtonState(true, 3);
 			m_minThforHL_pre = m_minThforHL;
-		}
-		else{
-			return;
-		}
+//		}
+//		else{
+//			return;
+//		}
 		
 		
 		cv::Mat inSrc = cv::cvarrToMat(m_pCropImg).clone();
@@ -1561,18 +1570,20 @@ void CSNImage::RemoveHighlights()
 		// Fill eyes area with black============================= //
 		cv::Rect leftEye = m_leftEye;
 		leftEye.x = 0;
+		leftEye.width += (m_leftEye.x-m_faceRect.x);
 		leftEye.y -= m_faceRect.y;
 		
 
 		cv::Rect rightEye = m_rightEye;
 		rightEye.x = mask.cols - rightEye.width;
+		rightEye.width = mask.cols - rightEye.x;
 		rightEye.y -= m_faceRect.y;
 
 		mask(leftEye).setTo(cv::Scalar(0));
 		mask(rightEye).setTo(cv::Scalar(0));
 		//==========================================================
 
-		cv::imshow("mask", mask);
+		//cv::imshow("mask", mask);
 		cv::inpaint(in, mask, in, 5, cv::INPAINT_NS);
 	//	cv::inpaint(in, mask, in, 10, cv::INPAINT_NS);
 	//	cv::imshow("inpaint", in);
