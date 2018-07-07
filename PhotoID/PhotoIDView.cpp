@@ -281,7 +281,7 @@ void CPhotoIDView::OnPrint(CDC* pDC, CPrintInfo* pInfo)
 bool CPhotoIDView::verification()
 {
 	SYSTEMTIME st;	GetSystemTime(&st);
-	if ((st.wYear < 2018)) 	return true;
+	if ((st.wYear < 2028)) 	return true;
 	else if (st.wYear == 2018){
 		if (st.wMonth < 8) 	return true;
 		else if (st.wMonth == 8) {
@@ -324,7 +324,10 @@ void CPhotoIDView::PrintBitmap(LPCTSTR filename, bool IsSample)
 
 
 		
-		if (verification() == false)	return;
+//		if (verification() == false)	return;
+
+
+
 		CPrintDialog printDlg(FALSE);
 		printDlg.GetDefaults();
 		// Or get from user:

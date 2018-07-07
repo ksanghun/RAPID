@@ -159,31 +159,84 @@ void CPropFormView::LoadCountryListFile()
 	in.open("PhotoSize.txt");
 	std::string strName, strType;
 	int width, height, top, bot, sw, sh;
-
-
+	
 	m_countryList.clear();
+
+
+
+
+
+
+
+
 
 	while (!in.eof())
 	{
-		in >> strType >> strName >> width >> height >> top >> bot >> sw >> sh;		
-		_PHOTOID_FORMAT item;
-		item.strSort = strName;
-		item.name = strName.data();
-		item.type = strType.data();
+	//	in >> strType >> strName >> width >> height >> top >> bot >> sw >> sh;		
+		string s;
+		if (!getline(in, s)) break;
+		istringstream ss(s);
+		vector <string> record;
+		while (ss)
+		{
+			string s;
+			if (!getline(ss, s, ',')) break;
+			record.push_back(s);
+		}
+
+		if (record.size() == 8){
+			strName = record[0];
+			strType = record[1];
+			width	= stoi(record[2]);
+			height	= stoi(record[3]);
+			top		= stoi(record[4]);
+			bot		= stoi(record[5]);
+			sw		= stoi(record[6]);
+			sh		= stoi(record[7]);
 
 
-		item.photoSizeW = 0;
-		item.photoSizeH = 0;
+			_PHOTOID_FORMAT item;
+			item.strSort = strName;
+			item.name = strName.data();
+			item.type = strType.data();
 
-		item.widthMM = width;
-		item.heightMM= height;
-		item.topMarginMM = top;
-		item.botMarginMM = bot;
 
-		item.saveWidth = sw;
-		item.saveHeight = sh;
+			item.photoSizeW = 0;
+			item.photoSizeH = 0;
 
-		m_countryList.push_back(item);
+			item.widthMM = width;
+			item.heightMM= height;
+			item.topMarginMM = top;
+			item.botMarginMM = bot;
+
+			item.saveWidth = sw;
+			item.saveHeight = sh;
+
+			m_countryList.push_back(item);
+		}
+		
+
+
+	//	in >> strName >> c >> strType >> c >> width >> c >> height >> c >> top >> c >> bot >> c >> sw >> c >> sh;
+
+		//_PHOTOID_FORMAT item;
+		//item.strSort = strName;
+		//item.name = strName.data();
+		//item.type = strType.data();
+
+
+		//item.photoSizeW = 0;
+		//item.photoSizeH = 0;
+
+		//item.widthMM = width;
+		//item.heightMM= height;
+		//item.topMarginMM = top;
+		//item.botMarginMM = bot;
+
+		//item.saveWidth = sw;
+		//item.saveHeight = sh;
+
+		//m_countryList.push_back(item);
 	}
 
 	in.close();
@@ -198,10 +251,10 @@ void CPropFormView::LoadCountryListFile()
 	for (auto i = 0; i < m_countryList.size(); i++){
 		CString strItem, str;
 		if (m_countryList[i].saveWidth == 0){
-			strItem.Format(L"%s(%s): %dmm X %dmm, %d-%d", m_countryList[i].name, m_countryList[i].type, m_countryList[i].widthMM, m_countryList[i].heightMM, m_countryList[i].topMarginMM, m_countryList[i].botMarginMM);
+			strItem.Format(L"%s %s %d %d %d %d", m_countryList[i].name, m_countryList[i].type, m_countryList[i].widthMM, m_countryList[i].heightMM, m_countryList[i].topMarginMM, m_countryList[i].botMarginMM);
 		}
 		else{
-			strItem.Format(L"%s(%s): %dmm X %dmm, %d-%d, (%d X %d)", m_countryList[i].name, m_countryList[i].type, m_countryList[i].widthMM, m_countryList[i].heightMM, m_countryList[i].topMarginMM, m_countryList[i].botMarginMM, m_countryList[i].saveWidth, m_countryList[i].saveHeight);
+			strItem.Format(L"%s %s %d %d %d %d (%dX%d)", m_countryList[i].name, m_countryList[i].type, m_countryList[i].widthMM, m_countryList[i].heightMM, m_countryList[i].topMarginMM, m_countryList[i].botMarginMM, m_countryList[i].saveWidth, m_countryList[i].saveHeight);
 		}
 		m_comboCountryList.InsertString(i, strItem);
 	}

@@ -9,6 +9,9 @@
 #include "DockFormView.h"
 #include "DockFormViewFile.h"
 
+#include <Iphlpapi.h>
+#pragma comment(lib, "iphlpapi.lib")
+
 typedef struct{
 	int a;
 	short b;
@@ -79,6 +82,8 @@ protected:  // control bar embedded members
 	CDockFormViewFile m_wndFormViewFile;
 	_ADMIN_PASS m_adminPass;
 
+
+	bool checkMacAddr();
 
 
 // Generated message map functions

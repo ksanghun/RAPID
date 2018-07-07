@@ -65,6 +65,12 @@ CMainFrame::~CMainFrame()
 int CMainFrame::OnCreate(LPCREATESTRUCT lpCreateStruct)
 {
 
+	if (checkMacAddr() == false) {
+		AfxMessageBox(L"Authorization failed");
+		return -1;
+	}
+
+
 
 	if (CFrameWndEx::OnCreate(lpCreateStruct) == -1)
 		return -1;
@@ -594,4 +600,71 @@ void CMainFrame::AddWorkItem(_WORK_TYPE wType, CString filename)
 
 		m_adminPass.a++;
 	}
+}
+
+
+
+
+bool CMainFrame::checkMacAddr()
+{
+	// Known MAC Address ====================//
+	// CString authorized = L"00:0D:3A:A2:E7:C2";	// VM in Azure
+	//========================================
+	const int numMacAddr = 15;
+	CString arrAutho[numMacAddr];
+	arrAutho[0] = L"E0:D5:5E:8B:33:A1";		// FGS  01
+	arrAutho[1] = L"70:F3:95:03:47:90";		// EunSun
+	arrAutho[2] = L"60:67:20:3B:DC:C5";		// TEST COM01
+	arrAutho[3] = L"";		// 
+	arrAutho[4] = L"";		// FGS	05
+	arrAutho[5] = L"";		// Wayne's Destop
+	arrAutho[6] = L"";		// Azura VM 01
+	arrAutho[7] = L"";		// Azura VM 02
+	arrAutho[8] = L"";		// FGS  06
+	arrAutho[9] = L"";
+	arrAutho[10] = L"";
+	arrAutho[11] = L"";  //
+	arrAutho[12] = L"";  // 
+	arrAutho[13] = L"";	// 
+	arrAutho[14] = L"";	// 
+
+
+	PIP_ADAPTER_INFO AdapterInfo;
+	DWORD dwBufLen = sizeof(AdapterInfo);
+	//	char *mac_addr = (char*)malloc(17);
+	CString strMacAddr = L"";
+
+	AdapterInfo = (IP_ADAPTER_INFO *)malloc(sizeof(IP_ADAPTER_INFO));
+	if (AdapterInfo == NULL) {
+
+		AfxMessageBox(L"couldn't read MAC Address");
+		return false;
+	}
+
+	if (GetAdaptersInfo(AdapterInfo, &dwBufLen) == ERROR_BUFFER_OVERFLOW) {
+		AdapterInfo = (IP_ADAPTER_INFO *)malloc(dwBufLen);
+		if (AdapterInfo == NULL) {
+			return false;
+		}
+	}
+
+	if (GetAdaptersInfo(AdapterInfo, &dwBufLen) == NO_ERROR) {
+		PIP_ADAPTER_INFO pAdapterInfo = AdapterInfo;// Contains pointer to current adapter info
+		do {
+			strMacAddr.Format(L"%02X:%02X:%02X:%02X:%02X:%02X",
+				pAdapterInfo->Address[0], pAdapterInfo->Address[1],
+				pAdapterInfo->Address[2], pAdapterInfo->Address[3],
+				pAdapterInfo->Address[4], pAdapterInfo->Address[5]);
+			pAdapterInfo = pAdapterInfo->Next;
+		} while (pAdapterInfo);
+	}
+	free(AdapterInfo);
+
+
+	for (int i = 0; i < numMacAddr; i++) {
+		if (strMacAddr == arrAutho[i]) {
+			return true;
+		}
+	}
+	return false;
 }
